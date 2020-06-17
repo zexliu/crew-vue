@@ -159,7 +159,8 @@ export default class extends Mixins(MixinTable) {
 
     {
       title: '描述',
-      dataIndex: 'description'
+      dataIndex: 'description',
+      ellipsis: true
     },
 
     {

@@ -110,7 +110,5 @@ export default class MixinDetails extends Vue {
 
   protected afterAddData() {}
 
-  protected beforeEditData() {
-    console.log(this.formData.menuIds)
-  }
+  protected beforeEditData() {}
 }

@@ -4,18 +4,10 @@
       <a-form-model v-model="listQuery" layout="inline">
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
-            <a-form-model-item label="角色名称">
+            <a-form-model-item label="题库名称">
               <a-input
-                v-model="listQuery.roleName"
-                placeholder="请输入角色名称模糊查询"
-              />
-            </a-form-model-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-model-item label="角色编码">
-              <a-input
-                v-model="listQuery.roleCode"
-                placeholder="请输入角色编码模糊查询"
+                v-model="listQuery.questionStoreName"
+                placeholder="请输入题库名称模糊查询"
               />
             </a-form-model-item>
           </a-col>
@@ -57,22 +49,13 @@
       </span>
 
       <span slot="action" slot-scope="record">
-        <a-dropdown>
-          <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-            更多 <a-icon type="down" />
-          </a>
-          <a-menu slot="overlay">
-            <a-menu-item>
-              <a href="javascript:;" @click="onDetailsClick(record)">详情</a>
-            </a-menu-item>
-            <a-menu-item>
-              <a href="javascript:;" @click="onEditClick(record)">编辑</a>
-            </a-menu-item>
-            <a-menu-item>
-              <a href="javascript:;" @click="onDeleteClick(record)">删除</a>
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <a @click="onEditClick(record)">
+          <a-icon type="edit" />
+          编辑
+        </a>
+
+        <a-divider type="vertical" />
+        <a @click="onDeleteClick(record)">删除</a>
       </span>
     </a-table>
     <details-drawer
@@ -94,16 +77,16 @@ import ExcelUpload from '@/components/Upload/ExcelUpload.vue'
 import MixinTable from '@/mixins/mixin-table'
 
 @Component({
-  name: 'RoleIndex',
+  name: 'StoreIndex',
   components: {
     DetailsDrawer,
     ExcelUpload
   }
 })
 export default class extends Mixins(MixinTable) {
-  subjectTitle = '角色'
-  subject = 'syRole'
-  url = '/api/v1/roles'
+  subjectTitle = '题库'
+  subject = 'qaQuestionStore'
+  url = '/api/v1/question/stories'
 
   private created() {
     this.fetch()
@@ -116,26 +99,16 @@ export default class extends Mixins(MixinTable) {
       width: 220
     },
     {
-      title: '角色名称',
-      dataIndex: 'roleName',
-      width: 140
+      title: '题库名称',
+      dataIndex: 'questionStoreName',
+      width: 200
     },
-    {
-      title: '角色编码',
-      dataIndex: 'roleCode',
-      width: 140
-    },
-    {
-      title: '排序',
-      dataIndex: 'seq',
-      width: 120
-    },
+
     {
       title: '描述',
       dataIndex: 'description',
       ellipsis: true
     },
-
     {
       title: '创建时间',
       dataIndex: 'createAt',
@@ -146,7 +119,7 @@ export default class extends Mixins(MixinTable) {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 100,
+      width: 200,
       scopedSlots: { customRender: 'action' }
     }
   ]

@@ -39,6 +39,35 @@ const constantRouterComponents: any = {
     import(/* webpackChunkName: "system" */ '@/views/system/menu/Index.vue'),
   systemDict: () =>
     import(/* webpackChunkName: "system" */ '@/views/system/dict/Index.vue'),
+  //question
+  question: () =>
+    import(
+      /* webpackChunkName: "question" */ '@/views/exam/question/Index.vue'
+    ),
+  questionStore: () =>
+    import(/* webpackChunkName: "question" */ '@/views/exam/store/Index.vue'),
+  pagerTemplate: () =>
+    import(
+      /* webpackChunkName: "question" */ '@/views/exam/template/Index.vue'
+    ),
+  pager: () =>
+    import(/* webpackChunkName: "question" */ '@/views/exam/pager/Index.vue'),
+  pagerAnswer: () =>
+    import(/* webpackChunkName: "question" */ '@/views/exam/answer/Index.vue'),
+
+  //apprange
+  station: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/station/Index.vue'
+    ),
+  runtimeTable: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-table/Index.vue'
+    ),
+  runtimeItem: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-item/Index.vue'
+    ),
   // exception
   exception403: () =>
     import(/* webpackChunkName: "fail" */ '@/views/exception/403.vue'),

@@ -19,11 +19,14 @@
       />
     </a-drawer>
 
+    <!-- todo theme -->
+    <!-- :theme="navTheme" -->
+
     <side-menu
       v-else-if="isSideMenu()"
       mode="inline"
       :menus="menus"
-      :theme="navTheme"
+      theme="light"
       :collapsed="collapsed"
       :collapsible="true"
     />

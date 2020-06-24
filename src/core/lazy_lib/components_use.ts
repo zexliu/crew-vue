@@ -42,6 +42,7 @@ import {
   Divider,
   DatePicker,
   TimePicker,
+  Calendar,
   Cascader,
   Upload,
   Progress,
@@ -88,6 +89,7 @@ Vue.use(Tag)
 Vue.use(Divider)
 Vue.use(DatePicker)
 Vue.use(TimePicker)
+Vue.use(Calendar)
 Vue.use(Cascader)
 Vue.use(Upload)
 Vue.use(Progress)

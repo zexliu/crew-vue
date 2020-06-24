@@ -4,7 +4,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { VueAxios } from './utils/request'
-
 import bootstrap from './core/bootstrap'
 import './core/lazy_use'
 import './components/global.less'

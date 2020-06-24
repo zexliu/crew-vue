@@ -21,61 +21,27 @@
           :wrapperCol="{ span: 14 }"
           :rules="rules"
         >
-          <a-form-model-item label="车站名称" prop="stationName">
+          <a-form-model-item label="班次名称" prop="shiftName">
             <a-input
               :disabled="type === 'INFO'"
-              v-model="formData.stationName"
-              placeholder="请输入车站名称"
+              v-model="formData.shiftName"
+              placeholder="请输入班次组名称"
             ></a-input>
           </a-form-model-item>
-
-          <a-form-model-item label="车站编码" prop="stationCode">
-            <a-input
-              :disabled="type === 'INFO'"
-              v-model="formData.stationCode"
-              placeholder="请输入车站编码"
-            ></a-input>
-          </a-form-model-item>
-
-          <!-- <a-form-model-item label="下一站" prop="nextStationId">
+          <a-form-model-item label="所属班次组" prop="shiftGroupId">
             <a-select
-              :disabled="type === 'INFO'"
-              v-model="formData.nextStationId"
-              placeholder="请选择下站信息"
-              style="width: 100%"
+              v-model="formData.shiftGroupId"
+              placeholder="请选择所属班次组"
             >
-              <a-select-option
-                v-for="station in stations"
-                :key="station.id"
-                :disabled="station.id === formData.id"
-              >
-                {{ station.stationName }}
+              <a-select-option v-for="group in groups" :key="group.id">
+                {{ group.groupName }}
               </a-select-option>
             </a-select>
-          </a-form-model-item> -->
-
-          <a-form-model-item label="下站距离">
-            <a-input-number
-              style="width: 100%"
-              v-model="formData.nextStationDistance"
-              placeholder="请输入下站距离"
-              :precision="2"
-              :max="100"
-              :min="0"
-            ></a-input-number>
           </a-form-model-item>
-
-          <a-form-model-item label="折返点" prop="isReturn">
-            <a-switch v-model="formData.isReturn" />
-          </a-form-model-item>
-
-          <a-form-model-item label="停车场" prop="isPark">
-            <a-switch v-model="formData.isPark" />
-          </a-form-model-item>
-
           <a-form-model-item label="排序">
             <a-input-number
               style="width: 100%"
+              :disabled="type === 'INFO'"
               v-model="formData.seq"
               placeholder="请输入排序"
               :precision="0"
@@ -125,42 +91,35 @@
 <script lang="ts">
 import { Mixins, Component, Prop } from 'vue-property-decorator'
 import MixinDetails from '@/mixins/mixin-details'
-interface StationReq {
-  stationName: string
-  stationCode: string
-  isReturn: boolean
-  isPark: boolean
-  nextStationDistance: number
-  seq: number
+interface TableReq {
+  shiftName: string
+  shiftGroupId: string
   description: string
+  seq: number
 }
 
-const defaultForm: StationReq = {
-  stationName: '',
-  stationCode: '',
-  isReturn: false,
-  isPark: false,
-  nextStationDistance: 0,
-  seq: 0,
-  description: ''
+const defaultForm: TableReq = {
+  shiftName: '',
+  shiftGroupId: '',
+  description: '',
+  seq: 0
 }
 @Component({
   name: 'DetailsDrawer'
 })
 export default class DetailsDrawer extends Mixins(MixinDetails) {
-  protected url = '/api/v1/stations'
-  protected subjectTitle = '车站'
+  protected url = '/api/v1/shifts'
+  protected subjectTitle = '班次组'
   protected formData = Object.assign({}, defaultForm)
-  // @Prop({ type: Array, default: [], required: true })
-  // public stations!: any[]
+  @Prop({ type: Array, default: [], required: true })
+  public groups!: any[]
   private rules = {
-    stationName: [
-      { required: true, message: '请输入车站名称', trigger: 'blur' },
+    shiftName: [
+      { required: true, message: '请输入班次名称', trigger: 'blur' },
       { min: 2, max: 30, message: '长度在2-30之间', trigger: 'blur' }
     ],
-    stationCode: [
-      { required: true, message: '请输入车站编码', trigger: 'blur' },
-      { min: 2, max: 30, message: '长度在2-30之间', trigger: 'blur' }
+    shiftGroupId: [
+      { required: true, message: '请选择所属班次组', trigger: 'blur' }
     ],
     description: [{ max: 200, message: '长度在200之内', trigger: 'blur' }]
   }

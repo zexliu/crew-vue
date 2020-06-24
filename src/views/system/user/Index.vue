@@ -220,6 +220,7 @@
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
+
 import { password } from '@/api/user'
 import DetailsDrawer from './DetailsDrawer.vue'
 import md5 from 'md5'

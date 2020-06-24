@@ -68,6 +68,25 @@ const constantRouterComponents: any = {
     import(
       /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-item/Index.vue'
     ),
+  runtimeDate: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-date/Index.vue'
+    ),
+  shiftGroup: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/shift-group/Index.vue'
+    ),
+  shift: () =>
+    import(/* webpackChunkName: "arrange" */ '@/views/arrange/shift/Index.vue'),
+
+  routeTable: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/route-table/Index.vue'
+    ),
+  routeItem: () =>
+    import(
+      /* webpackChunkName: "arrange" */ '@/views/arrange/route-item/Index.vue'
+    ),
   // exception
   exception403: () =>
     import(/* webpackChunkName: "fail" */ '@/views/exception/403.vue'),

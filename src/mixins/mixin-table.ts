@@ -1,10 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { downloadExcel } from '@/api/excel'
 import { fetchList, remove } from '@/api/common'
-const defaultListQuery = {
-  current: 1,
-  size: 10
-}
 
 @Component({
   components: {}
@@ -13,7 +9,7 @@ export default class MixinTable extends Vue {
   //data
 
   //查询条件
-  protected listQuery: any = Object.assign({}, defaultListQuery)
+  protected listQuery: any = {}
 
   protected subjectTitle = ''
   protected subject = ''
@@ -35,7 +31,9 @@ export default class MixinTable extends Vue {
     pageSizeOptions: ['10', '20', '50', '100'],
     showQuickJumper: true,
     showLessItems: true,
-    total: 0
+    total: 0,
+    current: 1,
+    pageSize: 10
   }
 
   //详情显示状态
@@ -50,14 +48,14 @@ export default class MixinTable extends Vue {
   //methods
   //查询 查询
   protected handleSearch() {
-    this.listQuery.current = 1
+    this.pagination.current = 1
     this.beforeSearch()
     this.fetch()
   }
 
   //查询重置
   protected handleResetSearch() {
-    this.listQuery = Object.assign({}, defaultListQuery)
+    this.listQuery = {}
   }
 
   //查询展开
@@ -67,8 +65,7 @@ export default class MixinTable extends Vue {
 
   //table 改变重新加载数据
   protected handleTableChange(pagination: any) {
-    this.listQuery.current = pagination.current
-    this.listQuery.size = pagination.pageSize
+    this.pagination = pagination
     this.fetch()
   }
 
@@ -95,7 +92,7 @@ export default class MixinTable extends Vue {
 
   //新增成功回调
   protected onAddSuccess(val: any) {
-    this.listQuery.current = 1
+    this.pagination.current = 1
     this.fetch()
   }
 
@@ -148,6 +145,8 @@ export default class MixinTable extends Vue {
     })
   }
   protected fetch() {
+    this.listQuery.current = this.pagination.current
+    this.listQuery.size = this.pagination.pageSize
     this.loading = true
     fetchList(this.url, this.listQuery)
       .then((response: any) => {

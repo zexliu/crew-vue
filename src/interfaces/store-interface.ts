@@ -26,6 +26,10 @@ export interface IUserState {
   id: string
 }
 
+export interface IDictState {
+  dicts: any
+}
+
 export interface IPermission {
   routers: any[]
   addRouters: any[]

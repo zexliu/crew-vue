@@ -8,12 +8,12 @@
       >
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
-            <a-form-model-item label="所属时刻表">
+            <a-form-model-item label="交路计划">
               <a-select
                 default-value=""
                 v-model="listQuery.tableId"
                 style="width: 100%"
-                placeholder="请选择所属时刻表"
+                placeholder="请选择所属交路计划"
               >
                 <a-select-option value="">
                   全部
@@ -25,32 +25,30 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="8" :sm="24">
-            <a-form-model-item label="车次">
-              <a-input v-model="listQuery.trainNo" placeholder="请输入车次" />
+            <a-form-model-item label="班次">
+              <a-select
+                default-value=""
+                v-model="listQuery.shiftId"
+                style="width: 100%"
+                placeholder="请选择所属班次"
+              >
+                <a-select-option value="">
+                  全部
+                </a-select-option>
+                <a-select-option v-for="item in shifts" :key="item.id">
+                  {{ item.shiftName }}</a-select-option
+                >
+              </a-select>
             </a-form-model-item>
           </a-col>
           <template v-if="expand">
             <a-col :md="8" :sm="24">
-              <a-form-model-item label="方向">
+              <a-form-model-item label="出勤地点">
                 <a-select
                   default-value=""
-                  v-model="listQuery.up"
+                  v-model="listQuery.attendanceStationId"
                   style="width: 100%"
-                  placeholder="请选择方向"
-                >
-                  <a-select-option v-for="item in upOptions" :key="item.value">
-                    {{ item.name }}</a-select-option
-                  >
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-model-item label="始发站">
-                <a-select
-                  default-value=""
-                  v-model="listQuery.startStationId"
-                  style="width: 100%"
-                  placeholder="请选择始发站"
+                  placeholder="请选择出勤地点"
                 >
                   <a-select-option value="">
                     全部
@@ -62,12 +60,20 @@
               </a-form-model-item>
             </a-col>
             <a-col :md="8" :sm="24">
-              <a-form-model-item label="终点站">
+              <a-form-model-item label="接车车次">
+                <a-input
+                  v-model="listQuery.meetTrainNo"
+                  placeholder="请输入接车车次"
+                />
+              </a-form-model-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-model-item label="接车地点">
                 <a-select
                   default-value=""
-                  v-model="listQuery.endStationId"
+                  v-model="listQuery.meetStationId"
                   style="width: 100%"
-                  placeholder="请选择终点站站"
+                  placeholder="请选择接车地点"
                 >
                   <a-select-option value="">
                     全部
@@ -80,11 +86,28 @@
             </a-col>
 
             <a-col :md="8" :sm="24">
-              <a-form-model-item label="服务号">
+              <a-form-model-item label="退勤车次">
                 <a-input
-                  v-model="listQuery.serviceNo"
-                  placeholder="请输入服务号"
+                  v-model="listQuery.meetTrainNo"
+                  placeholder="退勤车次"
                 />
+              </a-form-model-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-model-item label="退勤地点">
+                <a-select
+                  default-value=""
+                  v-model="listQuery.backStationId"
+                  style="width: 100%"
+                  placeholder="请选择退勤地点"
+                >
+                  <a-select-option value="">
+                    全部
+                  </a-select-option>
+                  <a-select-option v-for="item in stations" :key="item.id">
+                    {{ item.stationName }}</a-select-option
+                  >
+                </a-select>
               </a-form-model-item>
             </a-col>
           </template>
@@ -157,6 +180,7 @@
       :type="detailsType"
       :stations="stations"
       :tables="tables"
+      :shifts="shifts"
       :selectedKey="selectedKey"
       @close="onDetailsClosed"
       @on-edit-success="onEditSuccess"
@@ -169,29 +193,35 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import DetailsDrawer from './DetailsDrawer.vue'
-import ExcelUpload from '@/components/Upload/ExcelUpload.vue'
 import MixinTable from '@/mixins/mixin-table'
 import { fetchList } from '@/api/common'
 @Component({
   name: 'StoreIndex',
   components: {
-    DetailsDrawer,
-    ExcelUpload
+    DetailsDrawer
   }
 })
 export default class extends Mixins(MixinTable) {
-  subjectTitle = '时刻项'
-  subject = 'sbRuntimeItem'
-  url = '/api/v1/runtime/items'
+  subjectTitle = '交路计划项'
+  subject = 'sbRouteItem'
+  url = '/api/v1/route/items'
   tables: any[] = []
+  shifts: any[] = []
   stations: any[] = []
 
   private created() {
-    fetchList('/api/v1/runtime/tables', {
+    fetchList('/api/v1/route/tables', {
       current: 1,
       size: 99999
     }).then((res: any) => {
       this.tables = res.records
+    })
+
+    fetchList('/api/v1/shifts', {
+      current: 1,
+      size: 99999
+    }).then((res: any) => {
+      this.shifts = res.records
     })
     fetchList('/api/v1/stations', { current: 1, size: 99999 }).then(
       (res: any) => {
@@ -205,11 +235,11 @@ export default class extends Mixins(MixinTable) {
     this.fetch()
   }
 
-  private upOptions = [
-    { name: '全部', value: '' },
-    { name: '下行', value: 'false' },
-    { name: '上行', value: 'true' }
-  ]
+  // private upOptions = [
+  //   { name: '全部', value: '' },
+  //   { name: '下行', value: 'false' },
+  //   { name: '上行', value: 'true' }
+  // ]
 
   private columns = [
     {
@@ -280,12 +310,12 @@ export default class extends Mixins(MixinTable) {
     }
   ]
 
-  getTableName(id: string) {
-    let item = this.tables.find((el: any) => {
-      return el.id === id
-    })
-    return item ? item.tableName : ''
-  }
+  // getTableName(id: string) {
+  //   let item = this.tables.find((el: any) => {
+  //     return el.id === id
+  //   })
+  //   return item ? item.tableName : ''
+  // }
 
   getStationName(id: string) {
     let item = this.stations.find((el: any) => {
@@ -295,18 +325,18 @@ export default class extends Mixins(MixinTable) {
   }
 
   //编辑成功回调
-  protected onEditSuccess(val: any) {
-    val.startStationName = this.getStationName(val.startStationId)
-    val.endStationName = this.getStationName(val.endStationId)
+  //   protected onEditSuccess(val: any) {
+  //     val.startStationName = this.getStationName(val.startStationId)
+  //     val.endStationName = this.getStationName(val.endStationId)
 
-    const newData = [...this.tableData]
-    const target = newData.find((item: any) => {
-      return item.id === this.selectedKey
-    })
-    if (target) {
-      Object.assign(target, val)
-      this.tableData = newData
-    }
-  }
+  //     const newData = [...this.tableData]
+  //     const target = newData.find((item: any) => {
+  //       return item.id === this.selectedKey
+  //     })
+  //     if (target) {
+  //       Object.assign(target, val)
+  //       this.tableData = newData
+  //     }
+  //   }
 }
 </script>

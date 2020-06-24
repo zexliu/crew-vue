@@ -74,14 +74,14 @@ service.interceptors.request.use((config: any) => {
           //调用刷新函数
           return store
             .dispatch('user/RefreshToken', refreshToken)
-            .then(res => {
+            .then((res: any) => {
               config.headers['Authorization'] = 'Bearer ' + res.access_token
               // 已经刷新了token，将所有队列中的请求进行重试
               requests.forEach(fc => fc(res.access_token))
               requests = []
               return config
             })
-            .catch(e => {
+            .catch((e: any) => {
               logout()
             })
             .finally(() => {

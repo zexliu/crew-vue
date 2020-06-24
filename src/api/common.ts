@@ -20,7 +20,7 @@ export function update(url: string, id: string, data: any) {
   return axios({
     url: url + '/' + id,
     method: 'put',
-    data
+    data: data
   })
 }
 

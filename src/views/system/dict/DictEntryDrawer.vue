@@ -137,11 +137,11 @@ export default class extends Mixins(MixinTable) {
   rules = {
     dictEntryName: [
       { required: true, message: '字典项名称', trigger: 'blur' },
-      { min: 2, max: 30, message: '长度在2-30之间', trigger: 'blur' }
+      { min: 1, max: 30, message: '长度在2-30之间', trigger: 'blur' }
     ],
     dictEntryValue: [
       { required: true, message: '请输入字典项值', trigger: 'blur' },
-      { min: 2, max: 30, message: '长度在2-30之间', trigger: 'blur' }
+      { min: 1, max: 30, message: '长度在2-30之间', trigger: 'blur' }
     ]
   }
   subjectTitle = '字典项'

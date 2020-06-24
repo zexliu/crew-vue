@@ -49,6 +49,11 @@
               导入
             </a>
           </a-upload>
+          <a-divider type="vertical" />
+          <router-link
+            :to="{ name: 'RuntimeItem', params: { tableId: record.id } }"
+            ><a> <a-icon type="unordered-list" /> 时刻项</a></router-link
+          >
 
           <a-divider type="vertical" />
           <a @click="onDeleteClick(record)"> <a-icon type="delete" /> 删除</a>
@@ -119,7 +124,7 @@ export default class extends Mixins(MixinTable) {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 220,
+      width: 300,
       scopedSlots: { customRender: 'action' }
     }
   ]

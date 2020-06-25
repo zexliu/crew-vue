@@ -29,7 +29,7 @@
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-select @change="onRouteChanged">
+                <a-select @change="onRouteChanged" v-model="formData.tableId">
                   <a-select-option v-for="item in tables" :key="item.id">
                     {{ item.tableName }}</a-select-option
                   >
@@ -39,6 +39,7 @@
               <a-form-model-item
                 label="出勤时间"
                 prop="attendanceAtMoment"
+                v-model="formData.attendanceAtMoment"
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
@@ -54,11 +55,23 @@
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-select>
+                <a-select v-model="formData.meetStationId">
                   <a-select-option v-for="item in stations" :key="item.id">
                     {{ item.stationName }}
                   </a-select-option>
                 </a-select>
+              </a-form-model-item>
+
+              <a-form-model-item
+                label="退勤时间"
+                prop="backAtMoment"
+                :labelCol="{ span: 6 }"
+                :wrapperCol="{ span: 18 }"
+              >
+                <a-time-picker
+                  style="width:100%;"
+                  v-model="formData.backAtMoment"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
@@ -68,7 +81,7 @@
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-select>
+                <a-select v-model="formData.shiftId">
                   <a-select-option v-for="item in shifts" :key="item.id">
                     {{ item.shiftName }}</a-select-option
                   >
@@ -89,14 +102,40 @@
 
               <a-form-model-item
                 label="退勤车次"
-                prop="backTrainNo"
+                prop="backRuntimeItemId"
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-input
+                <a-select
+                  show-search
+                  v-model="formData.backRuntimeItemId"
+                  placeholder="请输入退勤车次"
+                  style="width: 100%"
+                  :default-active-first-option="false"
+                  :show-arrow="false"
+                  :filter-option="false"
+                  :not-found-content="null"
+                  @search="handleBackSearch"
+                >
+                  <a-select-option
+                    v-for="item in backRuntimeItems"
+                    :key="item.id"
+                  >
+                    {{ item.trainNo }}
+                  </a-select-option>
+                </a-select>
+                <!-- <a-input
                   style="width:100%;"
                   v-model="formData.backTrainNo"
-                ></a-input>
+                ></a-input> -->
+              </a-form-model-item>
+              <a-form-model-item
+                label="备注"
+                prop="remark"
+                :labelCol="{ span: 6 }"
+                :wrapperCol="{ span: 18 }"
+              >
+                <a-input v-model="formData.remark"></a-input>
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
@@ -106,7 +145,7 @@
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-select>
+                <a-select v-model="formData.attendanceStationId">
                   <a-select-option v-for="item in stations" :key="item.id">
                     {{ item.stationName }}
                   </a-select-option>
@@ -115,14 +154,32 @@
 
               <a-form-model-item
                 label="接车车次"
-                prop="meetTrainNo"
+                prop="meetRuntimeItemId"
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-input
+                <a-select
+                  show-search
+                  v-model="formData.meetRuntimeItemId"
+                  placeholder="请输入接车车次"
+                  style="width: 100%"
+                  :default-active-first-option="false"
+                  :show-arrow="false"
+                  :filter-option="false"
+                  :not-found-content="null"
+                  @search="handleMeetSearch"
+                >
+                  <a-select-option
+                    v-for="item in meetRuntimeItems"
+                    :key="item.id"
+                  >
+                    {{ item.trainNo }}
+                  </a-select-option>
+                </a-select>
+                <!-- <a-input
                   style="width:100%;"
                   v-model="formData.meetTrainNo"
-                ></a-input>
+                ></a-input> -->
               </a-form-model-item>
               <a-form-model-item
                 label="退勤地点"
@@ -130,20 +187,46 @@
                 :labelCol="{ span: 6 }"
                 :wrapperCol="{ span: 18 }"
               >
-                <a-select>
+                <a-select v-model="formData.backStationId">
                   <a-select-option v-for="item in stations" :key="item.id">
                     {{ item.stationName }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
+
+              <a-form-model-item
+                label="描述"
+                prop="description"
+                :labelCol="{ span: 6 }"
+                :wrapperCol="{ span: 18 }"
+              >
+                <a-input v-model="formData.description"></a-input>
+              </a-form-model-item>
             </a-col>
           </a-row>
-          <a-form-model-item label="行驶里程" prop="distance">
-            {{ distance }}KM
-          </a-form-model-item>
-          <a-form-model-item label="开行交路" prop="runtimeItemIds">
-            {{ trainNumberString }}
-          </a-form-model-item>
+
+          <a-row :gutter="16">
+            <a-col :span="16">
+              <a-form-model-item
+                label="开行交路"
+                prop="runtimeItemIds"
+                :labelCol="{ span: 3 }"
+                :wrapperCol="{ span: 21 }"
+              >
+                {{ trainNumberString }}
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-model-item
+                label="行驶里程"
+                prop="distance"
+                :labelCol="{ span: 6 }"
+                :wrapperCol="{ span: 18 }"
+              >
+                {{ distance }}KM
+              </a-form-model-item>
+            </a-col>
+          </a-row>
         </a-form-model>
         <a-divider>列车运行时刻信息</a-divider>
         <div class="table-operator">
@@ -259,21 +342,58 @@ import { Mixins, Component, Prop } from 'vue-property-decorator'
 import MixinDetails from '@/mixins/mixin-details'
 import moment from 'moment'
 import { fetchList } from '../../../api/common'
+import message from 'ant-design-vue/es/message'
 
 interface TableReq {
-  groupName: string
+  tableId: string | null
+  shiftId: string | null
+  routeItemNo: string
+  attendanceStationId: string | null
+  attendanceAt: string
+  attendanceAtMoment: any
+  meetAt: string
+  meetAtMoment: any
+  meetRuntimeItemId: string | null
+  meetStationId: string | null
+  backRuntimeItemId: string | null
+  backStationId: string | null
+  backAt: string
+  backAtMoment: any
+  distance: number
+  remark: string
   description: string
-  seq: number
-  tableId: string
   runtimeItemIds: string[]
+  meetRuntimeItem: any
+  backRuntimeItem: any
+  runtimeItems: any[]
+  runtimeTableId: string | null
+  trainNoDescriptions: string
 }
 
 const defaultForm: TableReq = {
-  groupName: '',
+  tableId: null,
+  shiftId: null,
+  routeItemNo: '',
+  attendanceStationId: null,
+  attendanceAt: '',
+  attendanceAtMoment: null,
+  meetAt: '',
+  meetAtMoment: null,
+  meetRuntimeItemId: null,
+  meetStationId: null,
+  backRuntimeItemId: null,
+  backStationId: null,
+  backAt: '',
+  backAtMoment: null,
+  distance: 0,
+  remark: '',
   description: '',
-  tableId: '',
-  seq: 0,
-  runtimeItemIds: []
+  runtimeItemIds: [],
+  meetRuntimeItem: null,
+  backRuntimeItem: null,
+  runtimeItems: [],
+  runtimeTableId: null,
+  trainNoDescriptions: ''
 }
 const defaultListQuery = {
   current: 1,
@@ -284,7 +404,7 @@ const defaultListQuery = {
   name: 'DetailsDrawer'
 })
 export default class DetailsDrawer extends Mixins(MixinDetails) {
-  protected url = '/api/v1/shift/groups'
+  protected url = '/api/v1/route/items'
   protected subjectTitle = '交路计划项'
   protected formData = Object.assign({}, defaultForm)
 
@@ -330,6 +450,10 @@ export default class DetailsDrawer extends Mixins(MixinDetails) {
 
   private selectedRows: any[] = []
 
+  private meetRuntimeItems: any[] = []
+
+  private backRuntimeItems: any[] = []
+
   protected pagination = {
     showQuickJumper: true,
     showLessItems: true,
@@ -373,11 +497,43 @@ export default class DetailsDrawer extends Mixins(MixinDetails) {
     }
   ]
   private rules = {
-    groupName: [
-      { required: true, message: '请输入班次组名称', trigger: 'blur' },
-      { min: 2, max: 30, message: '长度在2-30之间', trigger: 'blur' }
+    tableId: [{ required: true, message: '请选择交路计划', trigger: 'blur' }],
+    shiftId: [{ required: true, message: '请选择班次', trigger: 'blur' }],
+    attendanceStationId: [
+      { required: true, message: '请选择出勤地点', trigger: 'change' }
     ],
-    description: [{ max: 200, message: '长度在200之内', trigger: 'blur' }]
+    attendanceAtMoment: [
+      { required: true, message: '请选择出勤时间', trigger: 'change' }
+    ],
+    meetAtMoment: [
+      { required: true, message: '请选择接车时间', trigger: 'change' }
+    ],
+    backAtMoment: [
+      { required: true, message: '请选择退勤时间', trigger: 'change' }
+    ],
+    meetRuntimeItemId: [
+      { required: true, message: '请选择接车车次', trigger: 'change' }
+    ],
+    meetStationId: [
+      { required: true, message: '请选择接车地点', trigger: 'change' }
+    ],
+    backRuntimeItemId: [
+      { required: true, message: '请选择退勤车次', trigger: 'change' }
+    ],
+    backStationId: [
+      { required: true, message: '请选择退勤地点', trigger: 'change' }
+    ],
+    runtimeItemIds: [
+      {
+        required: true,
+        message: '请在下方表格中选择出行交路',
+        trigger: 'change',
+        type: 'array',
+        min: 1
+      }
+    ],
+    description: [{ max: 200, message: '长度在200之内', trigger: 'change' }],
+    remark: [{ max: 200, message: '长度在200之内', trigger: 'change' }]
   }
 
   protected handleSearch() {
@@ -396,15 +552,38 @@ export default class DetailsDrawer extends Mixins(MixinDetails) {
   }
 
   protected onLoadDataSuccess() {
-    this.onRouteChanged(this.formData.tableId)
+    this.runtimeTableId = this.formData.runtimeTableId
+    this.handleSearch()
+    this.formData.attendanceAtMoment = moment(
+      this.formData.attendanceAt,
+      'hh:mm:ss'
+    )
+
+    this.formData.meetAtMoment = moment(this.formData.meetAt, 'hh:mm:ss')
+    this.formData.backAtMoment = moment(this.formData.backAt, 'hh:mm:ss')
+    this.meetRuntimeItems = [this.formData.meetRuntimeItem]
+    this.backRuntimeItems = [this.formData.backRuntimeItem]
+    this.selectedRowKeys = []
+    this.selectedRows = []
+
+    this.formData.runtimeItems.forEach((item: any) => {
+      this.selectedRowKeys.push(item.id)
+    })
+    this.$set(this.formData, 'runtimeItemIds', this.selectedRowKeys)
+
+    this.selectedRows = this.formData.runtimeItems
   }
 
   private onRouteChanged(value: string) {
     let temp = this.tables.find(item => {
       return item.id === value
     })
-
     this.runtimeTableId = temp ? temp.runtimeTableId : null
+    this.formData.meetStationId = null
+    this.formData.backStationId = null
+    this.meetRuntimeItems = []
+    this.backRuntimeItems = []
+    this.onTableSelectChange([], [])
     this.handleSearch()
   }
 
@@ -459,6 +638,49 @@ export default class DetailsDrawer extends Mixins(MixinDetails) {
     }
 
     this.selectedRowKeys = selectedRowKeys
+    this.$set(this.formData, 'runtimeItemIds', selectedRowKeys)
+  }
+
+  handleMeetSearch(value: string) {
+    fetchList('/api/v1/runtime/items', {
+      tableId: this.runtimeTableId,
+      trainNo: value,
+      current: 1,
+      size: 50
+    }).then((res: any) => {
+      this.meetRuntimeItems = res.records
+    })
+  }
+
+  handleBackSearch(value: string) {
+    fetchList('/api/v1/runtime/items', {
+      tableId: this.runtimeTableId,
+      trainNo: value,
+      current: 1,
+      size: 50
+    }).then((res: any) => {
+      this.backRuntimeItems = res.records
+    })
+  }
+
+  protected beforeEditData() {
+    // console.log(
+    //   'before',
+    //   this.formData.attendanceAtMoment.format('hh:mm:ss'),
+    //   this.formData.meetAtMoment.format('hh:mm:ss'),
+    //   this.formData.backAtMoment.format('hh:mm:ss')
+    // )
+    this.formData.attendanceAt = this.formData.attendanceAtMoment.format(
+      'hh:mm:ss'
+    )
+    this.formData.meetAt = this.formData.meetAtMoment.format('hh:mm:ss')
+    this.formData.backAt = this.formData.backAtMoment.format('hh:mm:ss')
+    this.formData.distance = this.distance
+    this.formData.trainNoDescriptions = this.trainNumberString
+  }
+
+  protected beforeAddData() {
+    this.beforeEditData()
   }
 }
 </script>

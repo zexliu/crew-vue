@@ -25,7 +25,7 @@
             <a-input
               :disabled="type === 'INFO'"
               v-model="formData.pagerTemplateName"
-              placeholder="请输入角色名称"
+              placeholder="请输入模板名称"
             ></a-input>
           </a-form-model-item>
           <a-form-model-item label="所属题库" prop="questionStoreId">

@@ -148,20 +148,27 @@
       :loading="loading"
       :row-key="record => record.id"
       @change="handleTableChange"
-      :scroll="{ x: 1600 }"
+      :scroll="{ x: true }"
     >
       <span slot="createAt" slot-scope="createAt">
         {{ createAt | timeFormatter }}
       </span>
-      <span slot="up" slot-scope="up">
-        <a-tag v-if="up" color="blue">
-          上行线
-        </a-tag>
-        <a-tag v-else color="orange">下行线</a-tag>
-      </span>
       <span slot="tableId" slot-scope="tableId">
         {{ getTableName(tableId) }}
       </span>
+      <span slot="shiftId" slot-scope="shiftId">
+        {{ getShiftName(shiftId) }}
+      </span>
+      <span slot="attendanceStationId" slot-scope="attendanceStationId">
+        {{ getStationName(attendanceStationId) }}
+      </span>
+      <span slot="meetStationId" slot-scope="meetStationId">
+        {{ getStationName(meetStationId) }}
+      </span>
+      <span slot="backStationId" slot-scope="backStationId">
+        {{ getStationName(backStationId) }}
+      </span>
+
       <span slot="action" slot-scope="record">
         <a @click="onEditClick(record)">
           <a-icon type="edit" />
@@ -243,52 +250,73 @@ export default class extends Mixins(MixinTable) {
 
   private columns = [
     {
-      dataIndex: 'trainNo',
-      title: '车次',
+      dataIndex: 'tableId',
+      title: '交路表',
+      scopedSlots: { customRender: 'tableId' },
+      width: 100
+    },
+    {
+      dataIndex: 'shiftId',
+      title: '班次',
+      scopedSlots: { customRender: 'shiftId' },
+      width: 80
+    },
+    {
+      title: '出勤地点',
+      dataIndex: 'attendanceStationId',
+      width: 160,
+      scopedSlots: { customRender: 'attendanceStationId' }
+    },
+    {
+      title: '出勤时间',
+      dataIndex: 'attendanceAt',
       width: 120
     },
     {
-      title: '方向',
-      dataIndex: 'up',
-      width: 80,
-      scopedSlots: { customRender: 'up' }
+      title: '接车时间',
+      dataIndex: 'meetAt',
+      width: 120
     },
     {
-      title: '所属时刻表',
-      dataIndex: 'tableId',
-      width: 120,
-      scopedSlots: { customRender: 'tableId' }
+      title: '接车车次',
+      dataIndex: 'meetTrainNo',
+      width: 120
     },
     {
-      title: '始发站',
-      dataIndex: 'startStationName',
-      width: 160
+      title: '接车地点',
+      dataIndex: 'meetStationId',
+      width: 160,
+      scopedSlots: { customRender: 'meetStationId' }
     },
     {
-      title: '终点站',
-      dataIndex: 'endStationName',
-      width: 160
+      title: '开行交路',
+      dataIndex: 'trainNoDescriptions',
+      width: 500
+    },
+    {
+      title: '退勤车次',
+      dataIndex: 'backTrainNo',
+      width: 120
+    },
+    {
+      title: '退勤地点',
+      dataIndex: 'backStationId',
+      width: 160,
+      scopedSlots: { customRender: 'backStationId' }
+    },
+    {
+      title: '退勤时间',
+      dataIndex: 'backAt',
+      width: 120
     },
     {
       title: '总里程(KM)',
       dataIndex: 'distance',
       width: 120
     },
-
     {
-      title: '开点',
-      dataIndex: 'startAt',
-      width: 120
-    },
-    {
-      title: '到点',
-      dataIndex: 'endAt',
-      width: 120
-    },
-    {
-      title: '服务号',
-      dataIndex: 'serviceNo',
-      width: 80
+      title: '备注',
+      dataIndex: 'remark'
     },
     {
       title: '描述',
@@ -310,18 +338,25 @@ export default class extends Mixins(MixinTable) {
     }
   ]
 
-  // getTableName(id: string) {
-  //   let item = this.tables.find((el: any) => {
-  //     return el.id === id
-  //   })
-  //   return item ? item.tableName : ''
-  // }
+  getTableName(id: string) {
+    let item = this.tables.find((el: any) => {
+      return el.id === id
+    })
+    return item ? item.tableName : ''
+  }
 
   getStationName(id: string) {
     let item = this.stations.find((el: any) => {
       return el.id === id
     })
     return item ? item.stationName : ''
+  }
+
+  getShiftName(id: string) {
+    let item = this.shifts.find((el: any) => {
+      return el.id === id
+    })
+    return item ? item.shiftName : ''
   }
 
   //编辑成功回调

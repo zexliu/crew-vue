@@ -87,6 +87,16 @@ const constantRouterComponents: any = {
     import(
       /* webpackChunkName: "arrange" */ '@/views/arrange/route-item/Index.vue'
     ),
+
+  team: () =>
+    import(/* webpackChunkName: "staff" */ '@/views/staff/team/Index.vue'),
+  group: () =>
+    import(/* webpackChunkName: "staff" */ '@/views/staff/group/Index.vue'),
+  driver: () =>
+    import(/* webpackChunkName: "staff" */ '@/views/staff/driver/Index.vue'),
+  extension: () =>
+    import(/* webpackChunkName: "staff" */ '@/views/staff/extension/Index.vue'),
+  // exception
   // exception
   exception403: () =>
     import(/* webpackChunkName: "fail" */ '@/views/exception/403.vue'),

@@ -1,3 +1,4 @@
+import { notification } from 'ant-design-vue'
 import { getMenus } from '@/api/user'
 import { BasicLayout, BlankLayout, PageView, RouteView } from '@/layouts'
 import { CustomRouteConfig } from '@/interfaces/router-interface'
@@ -55,39 +56,32 @@ const constantRouterComponents: any = {
   pagerAnswer: () =>
     import(/* webpackChunkName: "question" */ '@/views/exam/answer/Index.vue'),
 
-  //apprange
+  //runtime
   station: () =>
     import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/station/Index.vue'
+      /* webpackChunkName: "runtime" */ '@/views/runtime/station/Index.vue'
     ),
   runtimeTable: () =>
-    import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-table/Index.vue'
-    ),
+    import(/* webpackChunkName: "runtime" */ '@/views/runtime/table/Index.vue'),
   runtimeItem: () =>
-    import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-item/Index.vue'
-    ),
+    import(/* webpackChunkName: "runtime" */ '@/views/runtime/item/Index.vue'),
   runtimeDate: () =>
-    import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/runtime-date/Index.vue'
-    ),
+    import(/* webpackChunkName: "runtime" */ '@/views/runtime/date/Index.vue'),
   shiftGroup: () =>
     import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/shift-group/Index.vue'
+      /* webpackChunkName: "route" */ '@/views/route/shift-group/Index.vue'
     ),
   shift: () =>
-    import(/* webpackChunkName: "arrange" */ '@/views/arrange/shift/Index.vue'),
+    import(/* webpackChunkName: "route" */ '@/views/route/shift/Index.vue'),
 
   routeTable: () =>
-    import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/route-table/Index.vue'
-    ),
+    import(/* webpackChunkName: "route" */ '@/views/route/table/Index.vue'),
   routeItem: () =>
-    import(
-      /* webpackChunkName: "arrange" */ '@/views/arrange/route-item/Index.vue'
-    ),
-
+    import(/* webpackChunkName: "route" */ '@/views/route/item/Index.vue'),
+  arrangeTable: () =>
+    import(/* webpackChunkName: "arrange" */ '@/views/arrange/table/Index.vue'),
+  arrangeDay: () =>
+    import(/* webpackChunkName: "arrange" */ '@/views/arrange/day/Index.vue'),
   team: () =>
     import(/* webpackChunkName: "staff" */ '@/views/staff/team/Index.vue'),
   group: () =>
@@ -96,6 +90,26 @@ const constantRouterComponents: any = {
     import(/* webpackChunkName: "staff" */ '@/views/staff/driver/Index.vue'),
   extension: () =>
     import(/* webpackChunkName: "staff" */ '@/views/staff/extension/Index.vue'),
+  attendance: () =>
+    import(
+      /* webpackChunkName: "staff" */ '@/views/staff/attendance/Index.vue'
+    ),
+  notificationTemplate: () =>
+    import(
+      /* webpackChunkName: "notice" */ '@/views/notice/notification/template/Index.vue'
+    ),
+  notification: () =>
+    import(
+      /* webpackChunkName: "notice" */ '@/views/notice/notification/records/Index.vue'
+    ),
+  announcementTemplate: () =>
+    import(
+      /* webpackChunkName: "notice" */ '@/views/notice/announcement/template/Index.vue'
+    ),
+  announcement: () =>
+    import(
+      /* webpackChunkName: "notice" */ '@/views/notice/announcement/records/Index.vue'
+    ),
   // exception
   // exception
   exception403: () =>

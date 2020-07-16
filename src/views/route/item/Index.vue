@@ -134,6 +134,14 @@
       <a-button type="primary" icon="plus" @click="onAddClick">
         添加{{ subjectTitle }}
       </a-button>
+      <a-button
+        type="primary"
+        icon="sync"
+        @click="onGenerateClick"
+        :disabled="!listQuery.tableId"
+      >
+        生成{{ subjectTitle }}
+      </a-button>
       <!-- <excel-upload :name="subject" :on-success="onExcelSuccess"></excel-upload>
       <a-button type="primary" icon="export" @click="exportExcel">
         导出
@@ -194,6 +202,12 @@
       @on-add-success="onAddSuccess"
     >
     </details-drawer>
+
+    <a-modal
+      :visible="generateShow"
+      title="生成交路"
+      @cancel="generateShow = false"
+    ></a-modal>
   </a-card>
 </template>
 
@@ -216,6 +230,7 @@ export default class extends Mixins(MixinTable) {
   shifts: any[] = []
   stations: any[] = []
 
+  generateShow = false
   private created() {
     fetchList('/api/v1/route/tables', {
       current: 1,
@@ -237,7 +252,7 @@ export default class extends Mixins(MixinTable) {
     )
     var tableId = this.$route.params.tableId
     if (tableId) {
-      this.listQuery.tableId = tableId
+      this.$set(this.listQuery, 'tableId', tableId)
     }
     this.fetch()
   }
@@ -249,6 +264,11 @@ export default class extends Mixins(MixinTable) {
   // ]
 
   private columns = [
+    {
+      dataIndex: 'routeItemNo',
+      title: '交路号',
+      width: 100
+    },
     {
       dataIndex: 'tableId',
       title: '交路表',
@@ -359,6 +379,9 @@ export default class extends Mixins(MixinTable) {
     return item ? item.shiftName : ''
   }
 
+  onGenerateClick() {
+    this.generateShow = true
+  }
   //编辑成功回调
   //   protected onEditSuccess(val: any) {
   //     val.startStationName = this.getStationName(val.startStationId)

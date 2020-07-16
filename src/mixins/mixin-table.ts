@@ -152,10 +152,14 @@ export default class MixinTable extends Vue {
       .then((response: any) => {
         this.tableData = response.records
         this.pagination.total = response.total
+        this.onSearchSuccess()
       })
       .finally(() => {
         this.loading = false
       })
   }
+
   protected beforeSearch() {}
+
+  protected onSearchSuccess() {}
 }

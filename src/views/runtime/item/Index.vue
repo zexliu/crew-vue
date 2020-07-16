@@ -200,7 +200,7 @@ export default class extends Mixins(MixinTable) {
     )
     var tableId = this.$route.params.tableId
     if (tableId) {
-      this.listQuery.tableId = tableId
+      this.$set(this.listQuery, 'tableId', tableId)
     }
     this.fetch()
   }

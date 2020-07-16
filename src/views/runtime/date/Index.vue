@@ -44,6 +44,7 @@
       :visible="generateShow"
       :title="generateTitle"
       :width="800"
+      :confirm-loading="generateLoading"
       okText="生成"
       @cancel="
         () => {
@@ -79,6 +80,39 @@
 
         <a-form-model-item label="生成规则">
           <a-form-model-item
+            label="工作日"
+            prop="generateRules.workday"
+            :colon="false"
+            :label-col="{ span: 4 }"
+            :wrapper-col="{ span: 18 }"
+          >
+            <a-select
+              v-model="generateForm.generateRules.workday"
+              placeholder="请选择时刻表"
+            >
+              <a-select-option v-for="item in tables" :key="item.id">
+                {{ item.tableName }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+          <a-form-model-item
+            label="周末"
+            prop="generateRules.holiday"
+            :colon="false"
+            :label-col="{ span: 4 }"
+            :wrapper-col="{ span: 18 }"
+          >
+            <a-select
+              v-model="generateForm.generateRules.holiday"
+              placeholder="请选择时刻表"
+            >
+              <a-select-option v-for="item in tables" :key="item.id">
+                {{ item.tableName }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+
+          <!-- <a-form-model-item
             label="周一"
             prop="generateRules.MONDAY"
             :colon="false"
@@ -189,7 +223,7 @@
                 {{ item.tableName }}
               </a-select-option>
             </a-select>
-          </a-form-model-item>
+          </a-form-model-item> -->
         </a-form-model-item>
       </a-form-model>
     </a-modal>
@@ -240,17 +274,20 @@ export default class extends Vue {
     endAt: null,
     generateRules: {}
   }
+  generateLoading = false
   generateRules = {
     startAt: [{ required: true, message: '请选择开始时间', trigger: 'blur' }],
     endAt: [{ required: true, message: '请选择结束时间', trigger: 'blur' }],
     generateRules: {
-      MONDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
-      TUESDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
-      WEDNESDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
-      THURSDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
-      FRIDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
-      SATURDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
-      SUNDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }]
+      workday: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      holiday: [{ required: true, message: '请选择时刻表', trigger: 'blur' }]
+      // MONDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      // TUESDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      // WEDNESDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      // THURSDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      // FRIDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      // SATURDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }],
+      // SUNDAY: [{ required: true, message: '请选择时刻表', trigger: 'blur' }]
     }
   }
 
@@ -357,7 +394,24 @@ export default class extends Vue {
     let el: any = this.$refs[formName]
     el.validate((valid: boolean) => {
       if (valid) {
-        return create('/api/v1/runtime/table/dates/gen', this.generateForm)
+        this.generateForm.generateRules.MONDAY = this.generateForm.generateRules.workday
+
+        this.generateForm.generateRules.TUESDAY = this.generateForm.generateRules.workday
+
+        this.generateForm.generateRules.WEDNESDAY = this.generateForm.generateRules.workday
+
+        this.generateForm.generateRules.THURSDAY = this.generateForm.generateRules.workday
+
+        this.generateForm.generateRules.FRIDAY = this.generateForm.generateRules.workday
+
+        this.generateForm.generateRules.SATURDAY = this.generateForm.generateRules.holiday
+
+        this.generateForm.generateRules.SUNDAY = this.generateForm.generateRules.holiday
+
+        delete this.generateForm.generateRules.workday
+        delete this.generateForm.generateRules.holiday
+        this.generateLoading = true
+        create('/api/v1/runtime/table/dates/gen', this.generateForm)
           .then(res => {
             this.$notification.success({
               message: '成功',
@@ -371,7 +425,10 @@ export default class extends Vue {
               description: '生成数据失败' + e
             })
           })
-          .finally(() => (this.generateShow = false))
+          .finally(() => {
+            this.generateShow = false
+            this.generateLoading = false
+          })
       } else {
         console.log('error submit!!')
         return false

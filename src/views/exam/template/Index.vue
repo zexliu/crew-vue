@@ -126,7 +126,7 @@ export default class extends Mixins(MixinTable) {
     let that = this
     this.$confirm({
       title: '确定要启用该模板吗?',
-      content: '启用模板将止其他模板为未启用状态',
+      content: '启用模板将至其他模板为未启用状态',
       onOk() {
         return enableTemplate(val.id).then(() => {
           that.fetch()

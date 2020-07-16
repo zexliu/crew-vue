@@ -142,6 +142,7 @@
               <a-form-model-item label="过期时间">
                 <!-- v-model="formData.expireAt" -->
                 <a-date-picker
+                  style="width: 100%"
                   :showTime="true"
                   :disabled="type === 'INFO'"
                   v-model="formData.expireAtMoment"

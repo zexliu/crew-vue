@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-drawer
-      :title="type === 'ADD' ? '发布通知' : '通知详情'"
+      :title="type === 'ADD' ? '发布公告' : '公告详情'"
       width="70%"
       :visible="visible"
       :body-style="{ paddingBottom: '80px' }"
@@ -21,34 +21,24 @@
               :disabled="type == 'INFO'"
             ></a-input>
           </a-form-model-item>
-          <a-form-model-item label="发布渠道" prop="channelType">
+          <a-form-model-item label="公告类型" prop="announcementType">
             <a-select
               :disabled="type == 'INFO'"
-              v-model="formData.channelType"
+              v-model="formData.announcementType"
               placeholder="请选择发布渠道"
             >
-              <a-select-option key="SYSTEM">站内</a-select-option>
-              <a-select-option key="EMAIL">邮件</a-select-option>
-              <a-select-option key="SMS">短信</a-select-option>
-              <a-select-option key="APP">APP</a-select-option>
+              <a-select-option
+                v-for="item in announcementTypeOptions"
+                :key="parseInt(item.dictEntryValue)"
+              >
+                {{ item.dictEntryName }}
+              </a-select-option>
             </a-select>
           </a-form-model-item>
 
           <a-form-model-item label="内容" prop="content">
-            <span v-if="type == 'INFO'" v-html="formData.content"></span>
-            <rich-editor
-              v-else-if="formData.channelType !== 'SMS'"
-              v-model="formData.content"
-              placeholder="请输入内容"
-            >
+            <rich-editor v-model="formData.content" placeholder="请输入内容">
             </rich-editor>
-
-            <a-textarea
-              v-else
-              v-model="formData.content"
-              placeholder="请输入内容"
-              :auto-size="{ minRows: 3, maxRows: 8 }"
-            ></a-textarea>
           </a-form-model-item>
           <a-form-model-item label="参数" prop="params">
             <a-textarea
@@ -57,40 +47,27 @@
               :placeholder="'请输入Json格式参数'"
             ></a-textarea>
           </a-form-model-item>
-          <a-form-model-item label="类型" prop="publishType">
-            <a-radio-group
-              v-model="formData.publishType"
-              :disabled="type == 'INFO'"
-            >
-              <a-radio :value="1">
-                全员
-              </a-radio>
-              <a-radio :value="2">
-                指定
-              </a-radio>
-            </a-radio-group>
+          <a-form-model-item label="有效开始时间">
+            <a-date-picker
+              show-time
+              v-model="formData.validStartAtMoment"
+              format="YYYY-MM-DD HH:mm:ss"
+            />
           </a-form-model-item>
-          <a-form-model-item
-            label="用户"
-            prop="userIds"
-            v-if="formData.publishType == 2"
-          >
-            <a-select
-              :disabled="type == 'INFO'"
-              v-model="formData.userIds"
-              mode="multiple"
-              style="width: 100%"
-              placeholder="请选择用户"
-              :default-active-first-option="false"
-              :show-arrow="false"
-              :filter-option="false"
-              :not-found-content="null"
-              @search="fetchUser"
-            >
-              <a-select-option v-for="item in users" :key="item.id">
-                {{ item.realName }}
-              </a-select-option>
-            </a-select>
+          <a-form-model-item label="有效结束时间">
+            <a-date-picker
+              show-time
+              v-model="formData.validEndAtMoment"
+              format="YYYY-MM-DD HH:mm:ss"
+            />
+          </a-form-model-item>
+
+          <a-form-model-item label="有效状态" prop="validStatus">
+            <a-switch
+              checked-children="有效"
+              un-checked-children="无效"
+              v-model="formData.validStatus"
+            />
           </a-form-model-item>
         </a-form-model>
         <div
@@ -123,29 +100,33 @@
   </div>
 </template>
 <script lang="ts">
-import { Mixins, Component } from 'vue-property-decorator'
+import { Mixins, Component, Prop } from 'vue-property-decorator'
 import MixinDetails from '@/mixins/mixin-details'
 import { fetchList } from '@/api/common'
 import RichEditor from '@/components/RichEditor/Index.vue'
-
+import moment from 'moment'
 interface QuestionReq {
   params: string
-  channelType: string | null
+  announcementType: string | null
   title: string
   content: string
-  publishType: number
-  userIds: number[]
-  users: []
+  validStartAt: string | null
+  validEndAt: string | null
+  validStartAtMoment: any | null
+  validEndAtMoment: any | null
+  validStatus: boolean
 }
 
 const defaultForm: QuestionReq = {
   params: '',
-  channelType: null,
+  announcementType: null,
   title: '',
   content: '',
-  publishType: 1,
-  userIds: [],
-  users: []
+  validStartAt: null,
+  validEndAt: null,
+  validStartAtMoment: null,
+  validEndAtMoment: null,
+  validStatus: true
 }
 
 @Component({
@@ -153,42 +134,57 @@ const defaultForm: QuestionReq = {
   components: { RichEditor }
 })
 export default class DetailsDrawer extends Mixins(MixinDetails) {
-  protected url = '/api/v1/notifications'
-  protected subjectTitle = '通知'
+  protected url = '/api/v1/announcements'
+  protected subjectTitle = '公告'
   protected formData = Object.assign({}, defaultForm)
-  users = []
+
+  @Prop({
+    type: Array,
+    default: []
+  })
+  private announcementTypeOptions!: any[]
   private rules = {
     title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
     content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
-    channelType: [
-      { required: true, message: '请选择发布渠道', trigger: 'blur' }
+    announcementType: [
+      { required: true, message: '请选择公告类型', trigger: 'blur' }
     ],
-    userIds: [{ required: true, message: '请选择用户', trigger: 'blur' }]
+    validStatus: [
+      { required: true, message: '请选择有效状态', trigger: 'blur' }
+    ]
   }
 
   protected resetFormData() {
     this.formData = Object.assign({}, defaultForm)
   }
 
-  onLoadDataSuccess() {
-    this.users = this.formData.users
-    this.formData.userIds = this.users.flatMap((item: any) => {
-      return item.id
-    })
+  beforeEditData() {
+    this.beforeAddData()
   }
-  fetchUser(value: string) {
-    console.log('search')
-    if (value) {
-      fetchList('/api/v1/users', {
-        realName: value,
-        current: 1,
-        size: 50
-      }).then((res: any) => {
-        this.users = res.records
-      })
+
+  beforeAddData() {
+    if (this.formData.validStartAtMoment != null) {
+      this.formData.validStartAt = this.formData.validStartAtMoment.format('x')
+      this.formData.validEndAt = this.formData.validEndAtMoment.format('x')
     } else {
-      this.users = []
+      this.formData.validStartAt = null
+      this.formData.validEndAt = null
     }
+  }
+
+  onLoadDataSuccess() {
+    this.$set(
+      this.formData,
+      'validStartAtMoment',
+      this.formData.validStartAt
+        ? moment(this.formData.validStartAt, 'x')
+        : null
+    )
+    this.$set(
+      this.formData,
+      'validEndAtMoment',
+      this.formData.validEndAt ? moment(this.formData.validEndAt, 'x') : null
+    )
   }
 }
 </script>

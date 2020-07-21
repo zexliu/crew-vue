@@ -4,7 +4,7 @@
       <a-form-model v-model="listQuery" layout="inline">
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
-            <a-form-model-item label="发布渠道" >
+            <a-form-model-item label="发布渠道">
               <a-select
                 v-model="listQuery.channelType"
                 placeholder="请选择模板类型"
@@ -214,7 +214,6 @@ export default class extends Mixins(MixinTable) {
     {
       title: '操作',
       key: 'operation',
-      fixed: 'right',
       width: 140,
       scopedSlots: { customRender: 'action' }
     }

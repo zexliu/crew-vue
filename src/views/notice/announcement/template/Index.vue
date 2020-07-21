@@ -124,39 +124,13 @@
         :wrapperCol="{ span: 20 }"
         :rules="rules"
       >
-        <a-row>
-          <a-col :span="12">
-            <a-form-model-item
-              label="标题"
-              prop="title"
-              :labelCol="{ span: 8 }"
-              :wrapperCol="{ span: 16 }"
-            >
-              {{ formData.title }}
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-model-item
-              label="发布渠道"
-              prop="title"
-              :labelCol="{ span: 8 }"
-              :wrapperCol="{ span: 16 }"
-            >
-              <a-tag v-if="formData.channelType === 'SYSTEM'" color="blue">
-                站内
-              </a-tag>
-              <a-tag v-else-if="formData.channelType === 'EMAIL'" color="green">
-                邮件
-              </a-tag>
-              <a-tag v-else-if="formData.channelType === 'SMS'" color="red">
-                短信
-              </a-tag>
-              <a-tag v-else color="orange">
-                APP
-              </a-tag>
-            </a-form-model-item>
-          </a-col>
-        </a-row>
+        <a-form-model-item label="公告类型" prop="announcementType">
+          {{ getAnnouncementName(formData.announcementType) }}
+        </a-form-model-item>
+        <a-form-model-item label="标题" prop="title">
+          {{ formData.title }}
+        </a-form-model-item>
+
         <a-form-model-item label="内容" prop="content">
           <span v-html="formData.content"></span>
         </a-form-model-item>
@@ -166,36 +140,26 @@
             :placeholder="'请输入Json格式参数'"
           ></a-textarea>
         </a-form-model-item>
-        <a-form-model-item label="类型" prop="publishType">
-          <a-radio-group v-model="formData.publishType">
-            <a-radio :value="1">
-              全员
-            </a-radio>
-            <a-radio :value="2">
-              指定
-            </a-radio>
-          </a-radio-group>
+        <a-form-model-item label="有效开始时间">
+          <a-date-picker
+            show-time
+            v-model="formData.validStartAtMoment"
+            format="YYYY-MM-DD HH:mm:ss"
+          />
         </a-form-model-item>
-        <a-form-model-item
-          label="用户"
-          prop="userIds"
-          v-if="formData.publishType == 2"
-        >
-          <a-select
-            v-model="formData.userIds"
-            mode="multiple"
-            style="width: 100%"
-            placeholder="请选择用户"
-            :default-active-first-option="false"
-            :show-arrow="false"
-            :filter-option="false"
-            :not-found-content="null"
-            @search="fetchUser"
-          >
-            <a-select-option v-for="item in users" :key="item.id">
-              {{ item.realName }}
-            </a-select-option>
-          </a-select>
+        <a-form-model-item label="有效结束时间">
+          <a-date-picker
+            show-time
+            v-model="formData.validEndAtMoment"
+            format="YYYY-MM-DD HH:mm:ss"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="有效状态" prop="validStatus">
+          <a-switch
+            checked-children="有效"
+            un-checked-children="无效"
+            v-model="formData.validStatus"
+          />
         </a-form-model-item>
       </a-form-model>
     </a-modal>
@@ -208,7 +172,7 @@ import DetailsDrawer from './DetailsDrawer.vue'
 import ExcelUpload from '@/components/Upload/ExcelUpload.vue'
 import MixinTable from '@/mixins/mixin-table'
 import { fetchList, create } from '@/api/common'
-
+import moment from 'moment'
 @Component({
   name: 'StoreIndex',
   components: {
@@ -226,18 +190,14 @@ export default class extends Mixins(MixinTable) {
   private rules = {
     title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
     content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
-    channelType: [
-      { required: true, message: '请选择发布渠道', trigger: 'blur' }
+    announcementType: [
+      { required: true, message: '请选择公告类型', trigger: 'blur' }
     ],
-    publishType: [
-      { required: true, message: '请选择发布类型', trigger: 'blur' }
-    ],
-    userIds: [{ required: true, message: '请指定发布用户', trigger: 'blur' }]
+    validStatus: [
+      { required: true, message: '请选择有效状态', trigger: 'blur' }
+    ]
   }
-
-  users = []
   announcementTypeOptions: any[] = []
-
   private created() {
     this.fetch()
     fetchList('/api/v1/dict/entries', { dictCode: 'ANNOUNCEMENT_TYPE' }).then(
@@ -287,51 +247,49 @@ export default class extends Mixins(MixinTable) {
     {
       title: '操作',
       key: 'operation',
-      fixed: 'right',
       width: 200,
       scopedSlots: { customRender: 'action' }
     }
   ]
 
   onPublish(value: any) {
+    this.formData = {}
     this.publishVisible = true
     this.formData.title = value.templateTitle
     this.formData.content = value.templateContent
-    this.formData.channelType = value.channelType
-    this.$set(this.formData, 'publishType', 1)
-    this.$set(this.formData, 'userIds', [])
+    this.formData.announcementType = value.announcementType
+    this.formData.params = ''
+    this.$set(this.formData, 'validStatus', true)
+    this.$set(this.formData, 'validStartAtMoment', null)
+    this.$set(this.formData, 'validEndAtMoment', null)
   }
 
-  fetchUser(value: string) {
-    console.log('search')
-    if (value) {
-      fetchList('/api/v1/users', {
-        realName: value,
-        current: 1,
-        size: 50
-      }).then((res: any) => {
-        this.users = res.records
-      })
-    } else {
-      this.users = []
-    }
-  }
   protected handleOk(formName: string) {
     let el: any = this.$refs[formName]
     el.validate((valid: boolean) => {
       if (valid) {
+        console.log(this.formData)
+        if (this.formData.validStartAtMoment != null) {
+          this.formData.validStartAt = this.formData.validStartAtMoment.format(
+            'x'
+          )
+        }
+        if (this.formData.validEndAtMoment != null) {
+          console.log('not null?')
+          this.formData.validEndAt = this.formData.validEndAtMoment.format('x')
+        }
         this.confirmLoading = true
-        create('/api/v1/notifications', this.formData)
+        create('/api/v1/announcements', this.formData)
           .then((res: any) => {
             this.$notification.success({
               message: '成功',
-              description: '发布通知成功'
+              description: '发布公告成功'
             })
           })
           .catch(() => {
             this.$notification.error({
               message: '失败',
-              description: '发布通知失败'
+              description: '发布公告失败'
             })
           })
           .finally(() => {
@@ -346,11 +304,14 @@ export default class extends Mixins(MixinTable) {
   }
 
   getAnnouncementName(value: number) {
-    let find = this.announcementTypeOptions.find((item: any) => {
-      return item.dictEntryValue === value.toString()
-    })
+    if (value) {
+      let find = this.announcementTypeOptions.find((item: any) => {
+        return item.dictEntryValue === value.toString()
+      })
 
-    return find ? find.dictEntryName : '--'
+      return find ? find.dictEntryName : '--'
+    }
+    return '--'
   }
 }
 </script>

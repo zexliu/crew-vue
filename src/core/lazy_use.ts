@@ -15,7 +15,6 @@ import VueClipboard from 'vue-clipboard2'
 // import './directives/action';
 
 // VueClipboard.config.autoSetContainer = true;
-
 Vue.use(Viser)
 // Vue.use(MultiTab);
 // Vue.use(PageLoading);

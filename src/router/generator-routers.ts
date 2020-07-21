@@ -110,7 +110,24 @@ const constantRouterComponents: any = {
     import(
       /* webpackChunkName: "notice" */ '@/views/notice/announcement/records/Index.vue'
     ),
-  // exception
+  ledRoute: () =>
+    import(/* webpackChunkName: "notice" */ '@/views/notice/led/Route.vue'),
+  ledAttendance: () =>
+    import(
+      /* webpackChunkName: "notice" */ '@/views/notice/led/Attendance.vue'
+    ),
+  transactionApply: () =>
+    import(
+      /* webpackChunkName: "transaction" */ '@/views/transaction/apply/Index.vue'
+    ),
+  transactionLog: () =>
+    import(
+      /* webpackChunkName: "transaction" */ '@/views/transaction/log/Index.vue'
+    ),
+  //safe
+  safeConfig: () =>
+    import(/* webpackChunkName: "safe" */ '@/views/safe/Config.vue'),
+  safeLog: () => import(/* webpackChunkName: "safe" */ '@/views/safe/Log.vue'),
   // exception
   exception403: () =>
     import(/* webpackChunkName: "fail" */ '@/views/exception/403.vue'),

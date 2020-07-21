@@ -50,9 +50,10 @@ import {
   Empty,
   Popconfirm,
   message,
-  notification
+  notification,
+  Descriptions,
+  Timeline
 } from 'ant-design-vue'
-
 Vue.use(ConfigProvider)
 Vue.use(Layout)
 Vue.use(Input)
@@ -97,6 +98,8 @@ Vue.use(Skeleton)
 Vue.use(Empty)
 Vue.use(Popconfirm)
 Vue.use(notification)
+Vue.use(Descriptions)
+Vue.use(Timeline)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

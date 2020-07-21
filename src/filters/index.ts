@@ -7,9 +7,9 @@ Vue.filter('moment', function(dataStr: any, pattern = 'x') {
   return moment(dataStr).format(pattern)
 })
 
-export function timeFormatter(timestamp: string) {
+export function timeFormatter(timestamp: any) {
   if (timestamp) {
-    var date = new Date(timestamp)
+    var date = new Date(parseInt(timestamp))
     const year = date.getFullYear()
     const month = date.getMonth() + 1
     const day = date.getDate()

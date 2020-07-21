@@ -1359,6 +1359,13 @@
   resolved "https://registry.npm.taobao.org/@types/q/download/@types/q-1.5.2.tgz?cache=0&sync_timestamp=1588201373449&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fq%2Fdownload%2F%40types%2Fq-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha1-aQoUdbhPKohP0HzXl8APXzE1bqg=
 
+"@types/screenfull@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.npm.taobao.org/@types/screenfull/download/@types/screenfull-4.1.0.tgz#e2f7bbb1d2c32c07e54908e47d00724b7515c2cb"
+  integrity sha1-4ve7sdLDLAflSQjkfQByS3UVwss=
+  dependencies:
+    screenfull "*"
+
 "@types/source-list-map@*":
   version "0.1.2"
   resolved "https://registry.npm.taobao.org/@types/source-list-map/download/@types/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
@@ -2049,6 +2056,11 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/amdefine/download/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
+
+animejs@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.npm.taobao.org/animejs/download/animejs-3.2.0.tgz#2daea7365983249022cc454fa726acdb4a84345d"
+  integrity sha1-La6nNlmDJJAizEVPpyas20qENF0=
 
 ansi-colors@^3.0.0:
   version "3.2.4"
@@ -3452,7 +3464,7 @@ core-js@^2.4.0:
   resolved "https://registry.npm.taobao.org/core-js/download/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
   integrity sha1-OIMUafmSK97Y7iHJ3EaYXgOZMIw=
 
-core-js@^3.6.4:
+core-js@^3.6.4, core-js@^3.6.5:
   version "3.6.5"
   resolved "https://registry.npm.taobao.org/core-js/download/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
   integrity sha1-c5XcJzrzf7LlDpvT2f6EEoUjHRo=
@@ -9286,6 +9298,11 @@ schema-utils@^2.0.0, schema-utils@^2.5.0, schema-utils@^2.6.5, schema-utils@^2.6
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
+screenfull@*, screenfull@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.npm.taobao.org/screenfull/download/screenfull-5.0.2.tgz#b9acdcf1ec676a948674df5cd0ff66b902b0bed7"
+  integrity sha1-uazc8exnapSGdN9c0P9muQKwvtc=
+
 select-hose@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/select-hose/download/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
@@ -10753,6 +10770,24 @@ vue-ls@^3.2.1:
   resolved "https://registry.npm.taobao.org/vue-ls/download/vue-ls-3.2.1.tgz#25d1c75b3a51c17018129de607b44bb120a3385a"
   integrity sha1-JdHHWzpRwXAYEp3mB7RLsSCjOFo=
 
+vue-marquee-component@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/vue-marquee-component/download/vue-marquee-component-1.0.0.tgz#100b2869aa5df36368384476ea9d55e20b0ec19c"
+  integrity sha1-EAsoaapd82NoOER26p1V4gsOwZw=
+  dependencies:
+    animejs "^3.2.0"
+    core-js "^3.6.4"
+    lodash "^4.17.15"
+    vue "^2.6.11"
+    vue-slider-component "^3.1.1"
+
+vue-property-decorator@^8.0.0:
+  version "8.5.1"
+  resolved "https://registry.npm.taobao.org/vue-property-decorator/download/vue-property-decorator-8.5.1.tgz#571a91cf8d2b507f537d79bf8275af3184572fff"
+  integrity sha1-VxqRz40rUH9TfXm/gnWvMYRXL/8=
+  dependencies:
+    vue-class-component "^7.1.0"
+
 vue-property-decorator@^8.4.1:
   version "8.4.2"
   resolved "https://registry.npm.taobao.org/vue-property-decorator/download/vue-property-decorator-8.4.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-property-decorator%2Fdownload%2Fvue-property-decorator-8.4.2.tgz#016e17f259f73bc547e77a50ce282ba18db4ee41"
@@ -10769,6 +10804,14 @@ vue-router@^3.1.6:
   version "3.1.6"
   resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-3.1.6.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-router%2Fdownload%2Fvue-router-3.1.6.tgz#45f5a3a3843e31702c061dd829393554e4328f89"
   integrity sha1-RfWjo4Q+MXAsBh3YKTk1VOQyj4k=
+
+vue-slider-component@^3.1.1:
+  version "3.2.2"
+  resolved "https://registry.npm.taobao.org/vue-slider-component/download/vue-slider-component-3.2.2.tgz#9803f357a12996fb3b81e5c1ad49f71af2858200"
+  integrity sha1-mAPzV6Eplvs7geXBrUn3GvKFggA=
+  dependencies:
+    core-js "^3.6.5"
+    vue-property-decorator "^8.0.0"
 
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.2:
   version "4.1.2"

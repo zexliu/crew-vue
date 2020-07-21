@@ -35,7 +35,7 @@
               placeholder="请选择发布渠道"
             >
               <a-select-option
-                :key="item.dictEntryValue"
+                :key="parseInt(item.dictEntryValue)"
                 v-for="item in announcementTypeOptions"
               >
                 {{ item.dictEntryName }}

@@ -4,25 +4,25 @@
       <a-form-model v-model="listQuery" layout="inline">
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
-            <a-form-model-item label="发布渠道" >
+            <a-form-model-item label="公告类型">
               <a-select
-                v-model="listQuery.channelType"
+                v-model="listQuery.announcementType"
                 placeholder="请选择模板类型"
               >
                 <a-select-option
-                  v-for="item in noticeTypeOptions"
-                  :key="item.value"
-                  >{{ item.label }}</a-select-option
+                  v-for="item in announcementTypeOptions"
+                  :key="parseInt(item.dictEntryValue)"
+                  >{{ item.dictEntryName }}</a-select-option
                 >
               </a-select>
             </a-form-model-item>
           </a-col>
 
           <a-col :md="8" :sm="24">
-            <a-form-model-item label="通知标题">
+            <a-form-model-item label="公告标题">
               <a-input
                 v-model="listQuery.keywords"
-                placeholder="通知标题模糊查询"
+                placeholder="公告标题模糊查询"
               ></a-input>
             </a-form-model-item>
           </a-col>
@@ -42,7 +42,7 @@
     </div>
     <div class="table-operator">
       <a-button type="primary" icon="plus" @click="onAddClick">
-        发布通知
+        发布公告
       </a-button>
       <!-- <excel-upload :name="subject" :on-success="onExcelSuccess"></excel-upload>
       <a-button type="primary" icon="export" @click="exportExcel">
@@ -59,31 +59,26 @@
       :row-key="record => record.id"
       @change="handleTableChange"
     >
-      <span slot="channelType" slot-scope="channelType">
-        <a-tag v-if="channelType === 'SYSTEM'" color="blue">
-          站内
-        </a-tag>
-        <a-tag v-else-if="channelType === 'EMAIL'" color="green">
-          邮件
-        </a-tag>
-        <a-tag v-else-if="channelType === 'SMS'" color="red">
-          短信
-        </a-tag>
-        <a-tag v-else color="orange">
-          APP
-        </a-tag>
+      <span slot="announcementType" slot-scope="announcementType">
+        {{ getAnnouncementName(announcementType) }}
       </span>
-      <span slot="publishType" slot-scope="publishType">
-        <a-tag v-if="publishType === 1" color="blue">
-          全员
-        </a-tag>
-        <a-tag v-else-if="publishType === 2" color="green">
-          指定用户
-        </a-tag>
+
+      <span slot="validStartAt" slot-scope="validStartAt">
+        {{ validStartAt | timeFormatter }}
       </span>
-      <!-- <a-tag v-for="tag in tags" :key="tag" color="blue">{{ tag }}</a-tag> -->
+      <span slot="validEndAt" slot-scope="validEndAt">
+        {{ validEndAt | timeFormatter }}
+      </span>
       <span slot="createAt" slot-scope="createAt">
         {{ createAt | timeFormatter }}
+      </span>
+      <span slot="validStatus" slot-scope="validStatus">
+        <a-tag v-if="validStatus" color="blue">
+          是
+        </a-tag>
+        <a-tag v-else color="orange">
+          否
+        </a-tag>
       </span>
       <!-- <span
         slot="templateContent"
@@ -93,19 +88,25 @@
       </span> -->
 
       <span slot="action" slot-scope="record">
-        <a @click="onDetailsClick(record)">
+        <!-- <a @click="onDetailsClick(record)">
           详情
         </a>
-
+        <a-divider type="vertical" /> -->
+        <a @click="onEditClick(record)">
+          编辑
+        </a>
         <a-divider type="vertical" />
         <a @click="onDeleteClick(record)">删除</a>
       </span>
 
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
+        <h3>标题:</h3>
+        <span>{{ record.title }}</span>
+        <a-divider style=" margin-top: 10px; margin-bottom: 10px; "></a-divider>
         <h3>模板内容:</h3>
         <span v-html="record.content"></span>
         <h3>参数:</h3>
-        <span v-html="record.params"></span>
+        <span>{{ record.params }}</span>
       </div>
     </a-table>
     <details-drawer
@@ -115,6 +116,7 @@
       @close="onDetailsClosed"
       @on-edit-success="onEditSuccess"
       @on-add-success="onAddSuccess"
+      :announcementTypeOptions="announcementTypeOptions"
     >
     </details-drawer>
   </a-card>
@@ -138,33 +140,17 @@ import RichEditor from '@/components/RichEditor/Index.vue'
 })
 export default class extends Mixins(MixinTable) {
   subjectTitle = '通知记录'
-  subject = 'sbNoticeTemplate'
-  url = '/api/v1/notifications'
-  storeOptions: any[] = []
-  publishVisible = false
-  confirmLoading = false
-  formData: any = {}
-  private rules = {
-    title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-    content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
-    channelType: [
-      { required: true, message: '请选择发布渠道', trigger: 'blur' }
-    ],
-    publishType: [
-      { required: true, message: '请选择发布类型', trigger: 'blur' }
-    ],
-    userIds: [{ required: true, message: '请指定发布用户', trigger: 'blur' }]
-  }
+  subject = 'iSnAnnouncement'
+  url = '/api/v1/announcements'
 
-  noticeTypeOptions = [
-    { label: '全部', value: '' },
-    { label: '站内', value: 'SYSTEM' },
-    { label: '邮件', value: 'EMAIL' },
-    { label: '短信', value: 'SMS' },
-    { label: 'APP', value: 'APP' }
-  ]
+  announcementTypeOptions: any[] = []
 
   private created() {
+    fetchList('/api/v1/dict/entries', { dictCode: 'ANNOUNCEMENT_TYPE' }).then(
+      (res: any) => {
+        this.announcementTypeOptions = res.records
+      }
+    )
     this.fetch()
   }
 
@@ -175,36 +161,49 @@ export default class extends Mixins(MixinTable) {
       width: 220
     },
     //ellipsis: true,
-
     {
       title: '标题',
       dataIndex: 'title',
-      width: 120
+      width: 200
     },
     {
-      title: '发布类型',
-      dataIndex: 'publishType',
-      scopedSlots: { customRender: 'publishType' },
-      width: 120
-    },
-    {
-      title: '发布渠道',
-      dataIndex: 'channelType',
-      width: 90,
-      scopedSlots: { customRender: 'channelType' }
-    },
-    {
-      title: '参数',
-      dataIndex: 'params',
+      title: '公告类型',
+      dataIndex: 'announcementType',
+      scopedSlots: { customRender: 'announcementType' },
       width: 120
     },
 
+    // {
+    //   title: '参数',
+    //   dataIndex: 'params',
+    //   width: 200,
+    //   ellipsis: true
+    // },
     {
-      title: '内容',
-      dataIndex: 'content',
-      ellipsis: true,
-      scopedSlots: { customRender: 'templateContent' }
+      title: '是否有效',
+      dataIndex: 'validStatus',
+      width: 90,
+      scopedSlots: { customRender: 'validStatus' }
     },
+    {
+      title: '有效开始时间',
+      dataIndex: 'validStartAt',
+      width: 190,
+      scopedSlots: { customRender: 'validStartAt' }
+    },
+    {
+      title: '有效结束时间',
+      dataIndex: 'validEndAt',
+      width: 190,
+      scopedSlots: { customRender: 'validEndAt' }
+    },
+    // {
+    //   title: '内容',
+    //   dataIndex: 'content',
+    //   width: 400,
+    //   ellipsis: true,
+    //   scopedSlots: { customRender: 'templateContent' }
+    // },
     {
       title: '创建时间',
       dataIndex: 'createAt',
@@ -213,20 +212,21 @@ export default class extends Mixins(MixinTable) {
     },
     {
       title: '操作',
+      width: 120,
       key: 'operation',
-      fixed: 'right',
-      width: 140,
       scopedSlots: { customRender: 'action' }
     }
   ]
 
-  onPublish(value: any) {
-    this.publishVisible = true
-    this.formData.title = value.templateTitle
-    this.formData.content = value.templateContent
-    this.formData.channelType = value.channelType
-    this.$set(this.formData, 'publishType', 1)
-    this.$set(this.formData, 'userIds', [])
+  getAnnouncementName(value: number) {
+    if (value) {
+      let find = this.announcementTypeOptions.find((item: any) => {
+        return item.dictEntryValue === value.toString()
+      })
+
+      return find ? find.dictEntryName : '--'
+    }
+    return '--'
   }
 }
 </script>

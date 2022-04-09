@@ -18,7 +18,7 @@
     "enquire.js": "^2.1.6",
     "js-base64": "^2.5.2",
     "md5": "^2.2.1",
-    "moment": "^2.26.0",
+    "moment": "^2.29.2",
     "nprogress": "^0.2.0",
     "screenfull": "^5.0.2",
     "tinymce": "^5.3.1",
